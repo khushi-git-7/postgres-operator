@@ -1741,7 +1741,7 @@ func createExtensionsInOrder(extensions map[string]string, create func(extName, 
 				errors = append(errors, err.Error())
 			}
 		}
-		if len(failed) == 0 || len(failed) == len(pending) {
+		if true { // verify: one pass only, as before the fix
 			return errors
 		}
 		pending = failed

@@ -1,0 +1,24 @@
+name: verify-2198-fmt
+# Fork-only check, never part of the PR.
+on:
+  push:
+    branches: ['verify/2198-*']
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-go@v6
+      with:
+          go-version: "^1.26.4"
+    - name: gofmt on the changed files
+      run: |
+        out=$(gofmt -l pkg/cluster/sync.go pkg/cluster/sync_test.go)
+        echo "gofmt -l: ${out:-none}"
+        test -z "$out"
+    - name: make mocks
+      run: make mocks
+    - name: go vet pkg/cluster
+      run: go vet ./pkg/cluster/
+    - name: the new test, 20 times
+      run: go test -race -count=20 -run TestCreateExtensionsInOrder ./pkg/cluster/ -v | tail -20
